@@ -48,3 +48,27 @@ int ti_fuse_writebuff_handler(u_register_t x1)
 
 	return 0;
 }
+
+int ti_debug_unlock_handler(u_register_t x1)
+{
+	int ret;
+
+	if (x1 == 0U) {
+		ERROR("x1 param is NULL\n");
+		return SMC_UNK;
+	}
+	NOTICE("BEFORE DEBUG UNLOCK\n");
+	ret = ti_sci_debug_unlock((unsigned long)x1);
+	NOTICE("AFTER DEBUG UNLOCK\n");
+	if (ret) {
+		ERROR("Debug unlock Failed: (%d)\n", ret);
+		return SMC_UNK;
+	}
+
+	return 0;
+}
+
+uint32_t ti_fuse_read_handler(uint8_t x1)
+{
+	return ti_sci_fuse_read(x1);
+}

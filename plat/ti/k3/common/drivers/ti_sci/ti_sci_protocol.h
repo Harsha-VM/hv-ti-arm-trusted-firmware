@@ -56,6 +56,8 @@
 
 /* Keywriter lite TISCI message to write keys from a buffer */
 #define TISCI_MSG_KEY_WRITER_LITE	0x9045
+#define TISCI_MSG_OPEN_DEBUG_FWLS       0x900C
+#define TISCI_MSG_READ_OTP_MMR          0x9022
 
 /**
  * struct ti_sci_msg_hdr - Generic Message Header for All messages and responses
@@ -878,6 +880,49 @@ struct ti_sci_msg_req_keywriter_lite {
 struct ti_sci_msg_resp_keywriter_lite {
 	struct ti_sci_msg_hdr hdr;
 	uint32_t debug_response;
+} __packed;
+
+/**
+ * \brief Request to provide the SOC UID via TISCI_MSG_OPEN_DEBUG_FWLS
+ *
+ * \param hdr Common TI-SCI header
+ * \param debug_cert_addr Physical address of the debug unlock certificate
+ */
+struct tisci_msg_open_debug_fwls_req {
+	struct ti_sci_msg_hdr hdr;
+	uint64_t debug_cert_addr;
+} __packed;
+
+/**
+ * \brief Response to the TISCI_MSG_OPEN_DEBUG_FWLS message
+ *
+ * \param hdr Common TI-SCI header
+ *
+ */
+struct tisci_msg_open_debug_fwls_resp {
+	struct ti_sci_msg_hdr hdr;
+} __packed;
+
+/**
+ * \brief Request message for reading OTP MMR
+ *
+ * \param hdr Common TI-SCI header
+ * \param mmr_idx Index of the 32-bit MMR to be read. Index starts from zero.
+ */
+struct tisci_msg_read_otp_mmr_req {
+	struct ti_sci_msg_hdr hdr;
+	uint8_t	mmr_idx;
+} __packed;
+
+/**
+ * \brief Respone message for reading OTP MMR
+ *
+ * \param hdr Common TI-SCI header
+ * \param mmr_val Value of the requested 32-bit MMR
+ */
+struct tisci_msg_read_otp_mmr_resp {
+	struct ti_sci_msg_hdr hdr;
+	uint32_t mmr_val;
 } __packed;
 
 #endif /* TI_SCI_PROTOCOL_H */

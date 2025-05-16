@@ -291,4 +291,7 @@ int ti_sci_prepare_sleep(uint8_t mode, uint64_t context_save_addr,
  */
 int ti_sci_keywriter_lite(unsigned long addr);
 
+int ti_sci_debug_unlock(unsigned long addr);
+uint32_t ti_sci_fuse_read(uint8_t mmr_idx);
+
 #endif /* TI_SCI_H */

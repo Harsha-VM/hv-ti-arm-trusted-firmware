@@ -14,6 +14,7 @@
 #include <lib/mmio.h>
 #include <tools_share/uuid.h>
 #include <k3_sip_svc.h>
+#include <ti_sci.h>
 
 /* K3 SiP Service UUID */
 DEFINE_SVC_UUID2(ti_sip_svc_uid,
@@ -55,6 +56,16 @@ uintptr_t sip_smc_handler(uint32_t smc_fid,
 
 	    case K3_SIP_OTP_WRITEBUFF:
 		    SMC_RET1(handle, ti_fuse_writebuff_handler(x1));
+
+	    case K3_SIP_DEBUG_UNLOCK:
+		    NOTICE("Hit ATF debug unlock\n");
+		    SMC_RET1(handle, ti_debug_unlock_handler(x1));
+
+	    case K3_SIP_OTP_READ:
+		    uint32_t ret;
+
+		    ret = ti_fuse_read_handler((uint8_t)x1);
+		    SMC_RET2(handle, 0, ret);
 
 	    default:
 		    ERROR("%s: unhandled SMC (0x%x)\n", __func__, smc_fid);

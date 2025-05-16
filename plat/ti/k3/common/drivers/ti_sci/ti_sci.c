@@ -1869,3 +1869,59 @@ int ti_sci_keywriter_lite(unsigned long addr)
 
 	return 0;
 }
+
+int ti_sci_debug_unlock(unsigned long addr)
+{
+	struct tisci_msg_open_debug_fwls_req req;
+	struct tisci_msg_open_debug_fwls_resp resp;
+
+	struct ti_sci_xfer xfer;
+	int ret;
+
+	ret = ti_sci_setup_one_xfer(TISCI_MSG_OPEN_DEBUG_FWLS, 0,
+				    &req, sizeof(req),
+				    &resp, sizeof(resp),
+				    &xfer);
+	if (ret) {
+		ERROR("Message alloc failed (%d)\n", ret);
+		return ret;
+	}
+
+	req.debug_cert_addr = addr;
+
+	ret = ti_sci_do_xfer(&xfer);
+	if (ret) {
+		ERROR("Transfer send failed (%d)\n", ret);
+		return ret;
+	}
+
+	return 0;
+}
+
+uint32_t ti_sci_fuse_read(uint8_t mmr_idx)
+{
+	struct tisci_msg_read_otp_mmr_req req;
+	struct tisci_msg_read_otp_mmr_resp resp;
+
+	struct ti_sci_xfer xfer;
+	int ret;
+
+	ret = ti_sci_setup_one_xfer(TISCI_MSG_READ_OTP_MMR, 0,
+				    &req, sizeof(req),
+				    &resp, sizeof(resp),
+				    &xfer);
+	if (ret) {
+		ERROR("Message alloc failed (%d)\n", ret);
+		return ret;
+	}
+
+	req.mmr_idx = mmr_idx;
+
+	ret = ti_sci_do_xfer(&xfer);
+	if (ret) {
+		ERROR("Transfer send failed (%d)\n", ret);
+		return ret;
+	}
+
+	return resp.mmr_val;
+}
