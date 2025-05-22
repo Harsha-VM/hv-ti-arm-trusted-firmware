@@ -14,6 +14,8 @@
 #include <lib/mmio.h>
 #include <tools_share/uuid.h>
 #include <k3_sip_svc.h>
+#include <ti_sci.h>
+#include <ti_sci_protocol.h>
 
 /* K3 SiP Service UUID */
 DEFINE_SVC_UUID2(ti_sip_svc_uid,
@@ -55,6 +57,37 @@ uintptr_t sip_smc_handler(uint32_t smc_fid,
 
 	    case K3_SIP_OTP_WRITEBUFF:
 		    SMC_RET1(handle, ti_fuse_writebuff_handler(x1));
+
+	    case K3_SIP_OTP_READ:
+		    uint32_t mmr_val;
+		    int ret1;	
+		    ret1 = ti_sci_read_otp(x1, x2, &mmr_val);
+		    if (ret1) {
+			ERROR("Read OTP Failed: (%d)\n", ret1);
+			SMC_RET1(handle, -1);
+		    }
+
+		    SMC_RET2(handle, ret1, mmr_val);
+
+	    case K3_SIP_OTP_WRITE:
+		    uint32_t row_val;
+		    int ret2;
+		    if (x1 == 1) {
+			ret2 = ti_sci_set_otp_bootmode(x2, x3);
+			if (ret2)
+				ERROR("Set OTP Bootmode Failed: (%d)\n", ret2);
+
+			SMC_RET1(handle, ret2);
+		    }
+
+		    ret2 = ti_sci_write_otp(x1, x2, x3, x4, &row_val);
+		    if (ret2) {
+			ERROR("Write OTP Failed: (%d)\n", ret2);
+			SMC_RET1(handle, -1);
+		    }
+
+		    SMC_RET2(handle, ret2, row_val);
+
 
 	    default:
 		    ERROR("%s: unhandled SMC (0x%x)\n", __func__, smc_fid);
