@@ -51,6 +51,18 @@ int ti_fuse_writebuff_handler(u_register_t x1)
 			ERROR("Keywriter Lite Failed: (%d)\n", ret);
 			return SMC_UNK;
 		}
+	} else if (k3_fuse_buff->tisci_id == TISCI_MSG_KEY_WRITER) {
+		/*
+		 * Buffer needs to be visible to the TISCI co-processor, since
+		 * the size can be maximum 8KB, flush 8 KB from the start of the address.
+		 */
+		flush_dcache_range((uintptr_t)k3_fuse_buff, SZ_8K);
+
+		ret = ti_sci_keywriter((unsigned long)&k3_fuse_buff->payload);
+		if (ret) {
+			ERROR("Keywriter Failed: (%d)\n", ret);
+			return SMC_UNK;
+		}
 	} else {
 		ERROR("Invalid TISCI ID (0x%x)\n", k3_fuse_buff->tisci_id);
 		return SMC_UNK;
