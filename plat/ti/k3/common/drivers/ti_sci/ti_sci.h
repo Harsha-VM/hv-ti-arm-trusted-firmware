@@ -324,4 +324,17 @@ int ti_sci_write_otp(uint8_t bank, uint32_t word, uint32_t val_in, uint32_t mask
  */
 int ti_sci_set_otp_bootmode(uint8_t idx, uint32_t bootmode);
 
+/**
+ * Keywriter Operations
+ *
+ * - ti_sci_keywriter - Command to program efuses using a
+ *                      signed image in memory.
+ *		@addr: The starting memory address of the signed image
+ *			containing the fuse programming data.
+ *
+ * NOTE: for all these functions, the following are generic in nature:
+ * Returns 0 for successful request, else returns corresponding error message.
+ */
+int ti_sci_keywriter(unsigned long addr);
+
 #endif /* TI_SCI_H */
