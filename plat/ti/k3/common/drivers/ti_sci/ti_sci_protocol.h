@@ -64,6 +64,9 @@
 /* Keywriter lite TISCI message to write keys from a buffer */
 #define TISCI_MSG_KEY_WRITER_LITE	0x9045
 
+/* Keywriter TISCI message to write keys from a signed image */
+#define TISCI_MSG_KEY_WRITER	        0x9031
+
 /**
  * struct ti_sci_msg_hdr - Generic Message Header for All messages and responses
  * @type:	Type of messages: One of TI_SCI_MSG* values
@@ -959,6 +962,38 @@ struct tisci_msg_set_otp_bootmode_req {
  */
 struct tisci_msg_set_otp_bootmode_resp {
 	struct ti_sci_msg_hdr hdr;
+} __packed;
+
+/**
+ * struct ti_sci_msg_req_keywriter - Request to program OTP efuses
+ *                                   using keywriter.
+ *
+ * @hdr              Generic Header
+ * @image_addr_low   Lower 32bit (Little Endian) of certificate
+ * @image_addr_high  Higher 32bit (Little Endian) of certificate
+ * @key_prog_mask    Reserved for future use
+ *
+ * Request type is TISCI_MSG_KEY_WRITER, response is appropriate
+ * message, or NACK in case of inability to satisfy request.
+ */
+struct ti_sci_msg_req_keywriter {
+	struct ti_sci_msg_hdr hdr;
+	uint32_t image_addr_low;
+	uint32_t image_addr_high;
+	uint32_t key_prog_mask[2];
+} __packed;
+
+/**
+ * struct ti_sci_msg_resp_keywriter - Response for keywriter message.
+ *
+ * @hdr             Generic Header
+ * @debug_response  Debug Response
+ *
+ * Response to TISCI_MSG_KEY_WRITER.
+ */
+struct ti_sci_msg_resp_keywriter {
+	struct ti_sci_msg_hdr hdr;
+	uint32_t debug_response;
 } __packed;
 
 #endif /* TI_SCI_PROTOCOL_H */
