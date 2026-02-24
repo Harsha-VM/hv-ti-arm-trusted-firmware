@@ -15,4 +15,12 @@
 #define K3_CLUSTER2_CORE_COUNT          U(0)
 #define K3_CLUSTER3_CORE_COUNT          U(0)
 
+/*
+ * Fuse writebuff
+ * K3_FUSE_WRITEBUFF_BASE - buffer content base addr in memory
+ * K3_FUSE_WRITEBUFF_SIZE - Maximum allocated size for the buffer
+ */
+#define K3_FUSE_WRITEBUFF_BASE	(0x82000000UL)
+#define K3_FUSE_WRITEBUFF_SIZE	(0x1000UL)
+
 #endif /* BOARD_DEF_H */
