@@ -105,6 +105,7 @@ BL31_SOURCES		+= \
 				${PLAT_PATH}/common/am62l_topology.c \
 				${PLAT_PATH}/common/drivers/firewall/firewall_config.c \
 				plat/ti/common/ti_svc.c		\
+				plat/ti/common/ti_sip_handler.c	\
 
 BL1_SOURCES		+= \
 				${PLAT_PATH}/common/am62l_bl1_setup.c \
