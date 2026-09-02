@@ -2212,3 +2212,61 @@ int ti_sci_set_otp_bootmode(uint8_t index, uint32_t mode)
 
 	return ret;
 }
+
+int ti_sci_get_keywriter_type()
+{
+	struct tisci_msg_get_keywriter_type_req req;
+	struct tisci_msg_get_keywriter_type_resp resp;
+
+	struct ti_sci_xfer xfer;
+	int ret;
+
+	ret = ti_sci_setup_one_xfer(TISCI_MSG_GET_KEY_WRITER_TYPE, 0,
+				    &req, sizeof(req),
+				    &resp, sizeof(resp),
+				    &xfer);
+	if (ret) {
+		ERROR("Message alloc failed (%d)\n", ret);
+		return ret;
+	}
+
+	ret = ti_sci_do_xfer(&xfer);
+	if (ret) {
+		ERROR("Transfer send failed (%d)\n", ret);
+		return ret;
+	}
+
+	NOTICE("Get keywriter type: (%d)\n", resp.keywriter_type);
+
+	return 0;
+}
+
+int ti_sci_set_keywriter_type(uint32_t type)
+{
+	struct tisci_msg_set_keywriter_type_req req;
+	struct tisci_msg_set_keywriter_type_resp resp;
+
+	struct ti_sci_xfer xfer;
+	int ret;
+
+	ret = ti_sci_setup_one_xfer(TISCI_MSG_SET_KEY_WRITER_TYPE, 0,
+				    &req, sizeof(req),
+				    &resp, sizeof(resp),
+				    &xfer);
+
+	if (ret) {
+		ERROR("Message alloc failed (%d)\n", ret);
+		return ret;
+	}
+
+	NOTICE("Setting keywriter type: (%d)\n", type);
+	req.keywriter_type = type;
+
+	ret = ti_sci_do_xfer(&xfer);
+	if (ret) {
+		ERROR("Transfer send failed (%d)\n", ret);
+		return ret;
+	}
+
+	return 0;
+}

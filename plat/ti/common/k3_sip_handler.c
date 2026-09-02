@@ -64,6 +64,18 @@ int ti_fuse_writebuff_handler(u_register_t x1)
 			ERROR("Keywriter Failed: (%d)\n", ret);
 			return SMC_UNK;
 		}
+	} else if (k3_fuse_buff->tisci_id == TISCI_MSG_GET_KEY_WRITER_TYPE) {
+		ret = ti_sci_get_keywriter_type();
+		if (ret) {
+			ERROR("Get Keywriter Type Failed: (%d)\n", ret);
+			return SMC_UNK;
+		}
+	} else if (k3_fuse_buff->tisci_id == TISCI_MSG_SET_KEY_WRITER_TYPE) {
+		ret = ti_sci_set_keywriter_type((uint32_t)((unsigned long)(k3_fuse_buff->payload)));
+		if (ret) {
+			ERROR("Set Keywriter Type Failed: (%d)\n", ret);
+			return SMC_UNK;
+		}
 	} else {
 		ERROR("Invalid TISCI ID (0x%x)\n", k3_fuse_buff->tisci_id);
 		return SMC_UNK;

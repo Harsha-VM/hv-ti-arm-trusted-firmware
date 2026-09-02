@@ -73,6 +73,13 @@
 /* Keywriter TISCI message to write keys from a signed image */
 #define TISCI_MSG_KEY_WRITER		0x9031
 
+
+/* Message to get the programmed key writer type */
+#define TISCI_MSG_GET_KEY_WRITER_TYPE   0x9047U
+
+/* Message to program the key writer type */
+#define TISCI_MSG_SET_KEY_WRITER_TYPE   0x9048U
+
 /**
  * struct ti_sci_secure_msg_hdr - Header that prefixes all TISCI messages sent
  *				  via secure transport.
@@ -1139,5 +1146,45 @@ struct tisci_msg_set_otp_bootmode_req {
 struct tisci_msg_set_otp_bootmode_resp {
 	struct ti_sci_msg_hdr hdr;
 } __packed;
+
+/**
+ * \brief Request message for get keywriter type.
+ *
+ * \param hdr               Standard TISCI header
+ */
+struct tisci_msg_get_keywriter_type_req {
+	struct ti_sci_msg_hdr hdr;
+} __attribute__((__packed__));
+
+/**
+ * \brief Response message for get keywriter type.
+ *
+ * \param hdr               Standard TISCI header
+ * \param keywriter_type    Keywriter type programmed on the device
+ */
+struct tisci_msg_get_keywriter_type_resp {
+	struct ti_sci_msg_hdr	hdr;
+	uint32_t		keywriter_type;
+} __attribute__((__packed__));
+
+/**
+ * \brief Request message for set keywriter type.
+ *
+ * \param hdr               Standard TISCI header
+ * \param keywriter_type    Keywriter type to program
+ */
+struct tisci_msg_set_keywriter_type_req {
+	struct ti_sci_msg_hdr	hdr;
+	uint32_t		keywriter_type;
+} __attribute__((__packed__));
+
+/**
+ * \brief Response message for set keywriter type.
+ *
+ * \param hdr               Standard TISCI header
+ */
+struct tisci_msg_set_keywriter_type_resp {
+	struct ti_sci_msg_hdr hdr;
+} __attribute__((__packed__));
 
 #endif /* TI_SCI_PROTOCOL_H */

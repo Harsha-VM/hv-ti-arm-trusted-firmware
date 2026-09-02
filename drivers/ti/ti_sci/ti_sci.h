@@ -395,4 +395,7 @@ int ti_sci_write_otp(uint8_t bank, uint32_t word, uint32_t val_in, uint32_t mask
  */
 int ti_sci_set_otp_bootmode(uint8_t idx, uint32_t bootmode);
 
+int ti_sci_get_keywriter_type();
+int ti_sci_set_keywriter_type(uint32_t type);
+
 #endif /* TI_SCI_H */
