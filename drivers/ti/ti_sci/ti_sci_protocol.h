@@ -61,6 +61,12 @@
 #define TI_SCI_MSG_FWL_GET		0x9001
 #define TI_SCI_MSG_FWL_CHANGE_OWNER	0x9002
 
+/* Keywriter lite TISCI message to program keys from a buffer */
+#define TISCI_MSG_KEYWRITER_LITE	0x9045
+
+/* Keywriter TISCI message to program keys from a signed image */
+#define TISCI_MSG_KEYWRITER		0x9031
+
 /**
  * struct ti_sci_secure_msg_hdr - Header that prefixes all TISCI messages sent
  *				  via secure transport.
@@ -1000,6 +1006,67 @@ struct ti_sci_msg_resp_fwl_change_owner_info {
 	uint8_t owner_index;
 	uint8_t owner_privid;
 	uint16_t owner_permission_bits;
+} __packed;
+
+/**
+ * struct ti_sci_msg_req_keywriter_lite - Request to program OTP efuses.
+ *
+ * @hdr             Generic Header
+ * @buff_addr_low   Lower 32bit (Little Endian) of buffer
+ * @buff_addr_high  Higher 32bit (Little Endian) of buffer
+ *
+ * Request type is TISCI_MSG_KEYWRITER_LITE, response is appropriate
+ * message, or NACK in case of inability to satisfy request.
+ */
+struct ti_sci_msg_req_keywriter_lite {
+	struct ti_sci_msg_hdr hdr;
+	uint32_t buff_addr_low;
+	uint32_t buff_addr_high;
+} __packed;
+
+/**
+ * struct ti_sci_msg_resp_keywriter_lite - Response for keywriter lite.
+ *
+ * @hdr             Generic Header
+ * @debug_response  Debug Response
+ *
+ * Response to TISCI_MSG_KEYWRITER_LITE.
+ */
+struct ti_sci_msg_resp_keywriter_lite {
+	struct ti_sci_msg_hdr hdr;
+	uint32_t debug_response;
+} __packed;
+
+/**
+ * struct ti_sci_msg_req_keywriter - Request to program OTP efuses
+ *                                   using keywriter.
+ *
+ * @hdr              Generic Header
+ * @image_addr_low   Lower 32bit (Little Endian) of certificate
+ * @image_addr_high  Higher 32bit (Little Endian) of certificate
+ * @key_prog_mask    Reserved for future use
+ *
+ * Request type is TISCI_MSG_KEYWRITER, response is appropriate
+ * message, or NACK in case of inability to satisfy request.
+ */
+struct ti_sci_msg_req_keywriter {
+	struct ti_sci_msg_hdr hdr;
+	uint32_t image_addr_low;
+	uint32_t image_addr_high;
+	uint32_t key_prog_mask[2];
+} __packed;
+
+/**
+ * struct ti_sci_msg_resp_keywriter - Response for keywriter message.
+ *
+ * @hdr             Generic Header
+ * @debug_response  Debug Response
+ *
+ * Response to TISCI_MSG_KEY_WRITER.
+ */
+struct ti_sci_msg_resp_keywriter {
+	struct ti_sci_msg_hdr hdr;
+	uint32_t debug_response;
 } __packed;
 
 #endif /* TI_SCI_PROTOCOL_H */

@@ -1,0 +1,79 @@
+/*
+ * Copyright (c) 2026, Texas Instruments. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#include <ti_platform_defs.h>
+#include <arch_helpers.h>
+#include <common/debug.h>
+#include <lib/smccc.h>
+#include <ti_sip_svc.h>
+#include <ti_sci.h>
+#include <ti_sci_protocol.h>
+
+/* K3 FUSE BUFFER STRUCT */
+struct k3_fuse_writebuff {
+	uint32_t ver_info;
+	uint32_t tisci_id;
+	void *payload;
+} __packed;
+
+/**
+ * ti_fuse_writebuff_handler - Handler for fuse writebuff SMCCC.
+ *
+ * @x1: The starting memory address of the buffer
+ *
+ * Return: 0 if all goes well, else appropriate error message
+ */
+int ti_fuse_writebuff_handler(u_register_t x1)
+{
+	int ret;
+	const struct k3_fuse_writebuff *k3_fuse_buff;
+
+	/*
+	 * The NS-supplied address must be exactly the fuse writebuff base to
+	 * prevent arbitrary memory access, and so that the whole buffer
+	 * (up to K3_FUSE_WRITEBUFF_SIZE) lies within the mapped region.
+	 */
+	if (x1 != K3_FUSE_WRITEBUFF_BASE) {
+		ERROR("x1 param 0x%lx is not equal to the fuse writebuff base 0x%lx\n",
+		      x1, K3_FUSE_WRITEBUFF_BASE);
+		return SMC_UNK;
+	}
+	k3_fuse_buff = (const struct k3_fuse_writebuff *)x1;
+	NOTICE("Writebuff version info: 0x%x\n", k3_fuse_buff->ver_info);
+	if (k3_fuse_buff->tisci_id == TISCI_MSG_KEYWRITER_LITE) {
+
+		/*
+		 * Buffer needs to be visible to the TISCI co-processor, since
+		 * the size is unknown, flush the entire page
+		 */
+		flush_dcache_range((uintptr_t)k3_fuse_buff, PAGE_SIZE);
+
+		ret = ti_sci_keywriter_lite((uintptr_t)&k3_fuse_buff->payload);
+		if (ret) {
+			ERROR("Keywriter Lite Failed: (%d)\n", ret);
+			return SMC_UNK;
+		}
+	} else if (k3_fuse_buff->tisci_id == TISCI_MSG_KEYWRITER) {
+
+		/*
+		 * Buffer needs to be visible to the TISCI co-processor, since
+		 * the size can be maximum 12KB, flush 12KB from the start of the address
+		 * Since PAGE_SIZE is 4KB, flush 3 pages (3U * 4KB = 12KB)
+		 */
+		flush_dcache_range((uintptr_t)k3_fuse_buff, (3U * PAGE_SIZE));
+
+		ret = ti_sci_keywriter((uintptr_t)&k3_fuse_buff->payload);
+		if (ret) {
+			ERROR("Keywriter Failed: (%d)\n", ret);
+			return SMC_UNK;
+		}
+	} else {
+		ERROR("Invalid TISCI ID (0x%x)\n", k3_fuse_buff->tisci_id);
+		return SMC_UNK;
+	}
+
+	return 0;
+}
